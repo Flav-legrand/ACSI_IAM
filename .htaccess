@@ -1,0 +1,56 @@
+# ============================================================
+# IAM-Local — Rewrite rules principales
+# ATTENTION : ce fichier est RÉGÉNÉRÉ par l'installateur avec le
+# chemin de dossier détecté. Si vous le modifiez manuellement,
+# réexécutez install.php (ou adaptez le chemin ci-dessous).
+# ============================================================
+
+RewriteEngine On
+
+# ── Passer l'en-tête Authorization à PHP sous FastCGI (mod_fcgid) ──
+SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
+
+# NOTE pré-vol CORS : WAMP/mod_fcgid ne transmet pas OPTIONS à PHP ;
+# Apache répond nativement en 200 avec les en-têtes Access-Control-* ci-dessous
+# (un 2xx + en-têtes CORS valident le pré-vol côté navigateur).
+
+# ── Sécurité : cacher les fichiers sensibles ──────────────────
+RewriteRule ^\.installed$ - [F,L]
+RewriteRule ^\.htaccess$ - [F,L]
+
+# ── Rediriger vers install.php si pas encore installé ─────────
+RewriteCond %{DOCUMENT_ROOT}/IAM-Local/.installed !-f
+RewriteCond %{REQUEST_URI} !^/IAM-Local/install\.php
+RewriteCond %{REQUEST_URI} !^/IAM-Local/install\.php$
+RewriteRule ^(.*)$ /IAM-Local/install.php [R=302,L]
+
+# ── En-têtes de sécurité ─────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With, X-IAM-Device"
+    Header always set Access-Control-Max-Age "86400"
+    Header always set Access-Control-Expose-Headers "X-RateLimit-Remaining, X-RateLimit-Reset"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data: blob:; font-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self'"
+    Header set Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
+
+# ── Empêcher l'accès direct aux dossiers config/includes/sql ─
+<IfModule mod_rewrite.c>
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^includes/ - [F,L]
+    RewriteRule ^sql/ - [F,L]
+    RewriteRule ^client/ - [F,L]
+</IfModule>
+
+# ── Définir le type par défaut ────────────────────────────────
+<IfModule mod_mime.c>
+    AddType text/html .php
+</IfModule>
+
+# ── Cacher les fichiers .php du listing ───────────────────────
+Options -Indexes
