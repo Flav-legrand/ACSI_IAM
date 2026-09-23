@@ -515,7 +515,9 @@
   </ul>
 
   <h2>11.2 Informations affichées</h2>
-  <p>Date, action (badge coloré), utilisateur (e-mail + identifiant), détails, IP, navigateur. Pagination : 30 lignes par page.</p>
+  <p>Date, action (badge coloré), utilisateur (e-mail + identifiant), détails, IP, navigateur. Si la géolocalisation est activée
+  (<code>geoip_lookup</code>, voir <a href="#s12">« Paramètres »</a>), une colonne <b>pays</b> apparaît (IP privée = « Réseau local »).
+  Pagination : 30 lignes par page.</p>
 
   <h2>11.3 Événements principaux tracés</h2>
   <p>
@@ -530,6 +532,13 @@
     <span class="badge badge-green">sso_issue</span>
     <span class="badge badge-green">sso_login</span>
     <span class="badge badge-green">mfa_verified</span>
+    <span class="badge badge-green">group_created</span>
+    <span class="badge badge-green">import_users</span>
+    <span class="badge badge-green">oauth_consent</span>
+    <span class="badge badge-green">oauth_token</span>
+    <span class="badge badge-green">oauth_client_credentials</span>
+    <span class="badge badge-green">oauth_client_created</span>
+    <span class="badge badge-green">oauth_key_rotated</span>
     <span class="badge badge-warn">account_locked</span>
     <span class="badge badge-warn">mfa_lockout</span>
     <span class="badge badge-red">session_revoked</span>
@@ -567,6 +576,15 @@
   <h2>12.3 Informations plateforme (lecture seule)</h2>
   <p>La page affiche aussi les informations statiques : nom (<code>IAM_NAME</code>), version, URL, base de données, état SMTP et récapitulatif de la politique active.</p>
   <div class="info callout">&#8505;&#65039; Le SMTP sert à l'envoi des codes MFA par e-mail. Non configuré, l'IAM passe en <b>mode démonstration</b> : le code OTP s'affiche directement à l'écran.</div>
+
+  <h2>12.4 API &amp; sécurité</h2>
+  <p>Dans la carte « API &amp; sécurité » de la même page :</p>
+  <table>
+    <tr><th style="width:34%">Paramètre</th><th style="width:12%">Défaut</th><th>Description</th></tr>
+    <tr><td><b>Origines autorisées (CORS)</b> — <code>cors_origins</code></td><td><code>*</code></td><td>Liste séparée par des virgules des origines autorisées à appeler l'API IAM depuis un navigateur (ex. <code>https://app.monchantier.ci, http://localhost:8080</code>). <code>*</code> = toutes les origines (API publique).</td></tr>
+    <tr><td><b>Recherche du pays des IP</b> — <code>geoip_lookup</code></td><td>désactivé</td><td>Active la géolocalisation des adresses IP publiques (service ip-api.com, données <b>non stockées</b>) pour renseigner la colonne « pays » des journaux d'audit. Les IP privées/locales restent affichées « Réseau local ».</td></tr>
+  </table>
+  <div class="warn callout">&#9888;&#65039; Protection anti brute-force par IP : <b>60 échecs max / 15 minutes</b> par adresse IP (constantes <code>IP_RATE_MAX_ATTEMPTS</code> / <code>IP_RATE_WINDOW_MINUTES</code>), appliquée aux pages <b>et</b> aux API de connexion, en plus du verrouillage par compte (5 échecs / 30 min).</div>
 </div>
 
 <!-- ================= 13. MON PROFIL ================= -->

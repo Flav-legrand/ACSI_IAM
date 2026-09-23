@@ -121,7 +121,7 @@ et de table d'utilisateurs à maintenir.</p>
   <li><strong>Organisations</strong> : arborescence Ministère/Direction/Service/Bureau avec affectation des utilisateurs.</li>
   <li><strong>Sessions</strong> : consultation, filtrage par utilisateur, révocation individuelle ou totale.</li>
   <li><strong>Journal d'audit</strong> : recherche textuelle et filtrage par action sur <code>audit_logs</code>.</li>
-  <li><strong>Paramètres</strong> : politique de mots de passe, durée de session et d'inactivité.</li>
+  <li><strong>Paramètres</strong> : politique de mots de passe, durée de session et d'inactivité, <strong>paramètres API &amp; sécurité</strong> (origines CORS autorisées, géolocalisation optionnelle des IP, anti force brute par IP).</li>
   <li><strong>E-mail &amp; MFA</strong> : configuration SMTP (Gmail/Outlook, clé applicative), envoi de test, guide pas à pas à 3 étapes.</li>
   <li><strong>Applications</strong> : création, édition, permissions, accès utilisateurs, déploiement/retrait du garde SSO, téléchargement du garde.</li>
   <li><strong>OAuth / OIDC</strong> : console de gestion des clients (identifiants, secret affiché une seule fois, URI de redirection,
@@ -802,6 +802,9 @@ Un nouvel échec incrémente <code>login_attempts</code> ; dès le seuil de 5, l
 <h3>5.2 Mesures de sécurité</h3>
 <ul>
   <li>Anti force brute positionnable (verrouillage après 5 échecs / 30 min), journalisé.</li>
+  <li>Anti force brute <strong>par adresse IP</strong> sur les pages et API de connexion : 60 échecs / 15 min (paramétrable en constantes).</li>
+  <li>Origines CORS d'accès à l'API paramétrables (<code>settings.cors_origins</code>, défaut <code>*</code>).</li>
+  <li>Géolocalisation optionnelle des adresses IP publiques dans l'audit (service ip-api.com, sans stockage ; IP locales = « Réseau local »).</li>
   <li>Protection CSRF sur toutes les actions d'administration (jeton de session).</li>
   <li>Échappement HTML systématique (<code>htmlspecialchars</code>) sur les saisies restituées.</li>
   <li>Vérification de l'hôte dans l'URL de retour SSO (anti redirection ouverte).</li>
